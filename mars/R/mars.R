@@ -23,3 +23,19 @@ mars.control <- function(Mmax = 2, d = 3, trace = FALSE) {
   control <- validate_mars.control(control)
   new_mars.control(control)
 }
+
+h <- function(x, s, t) {
+  pmax(0, s * (x - t))
+}
+
+init_B <- function(N, Mmax) {
+  B        <- as.data.frame(matrix(NA_real_, nrow = N, ncol = Mmax + 1))
+  B[, 1]   <- 1
+  names(B) <- c("B0", paste0("B", 1:Mmax))
+  B
+}
+
+split_points <- function(xv, Bm) {
+  out <- sort(unique(xv[Bm > 0]))
+  out[-length(out)]
+}
