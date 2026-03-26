@@ -39,3 +39,12 @@ split_points <- function(xv, Bm) {
   out <- sort(unique(xv[Bm > 0]))
   out[-length(out)]
 }
+
+LOF <- function(form, data, control) {
+  ff     <- lm(form, data)
+  RSS    <- sum(residuals(ff)^2)
+  N      <- nrow(data)
+  M      <- length(coef(ff)) - 1
+  Ctilde <- sum(hatvalues(ff)) + control$d * M
+  RSS * N / (N - Ctilde)^2
+}
