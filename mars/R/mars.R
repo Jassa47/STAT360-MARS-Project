@@ -145,4 +145,26 @@ bwd_stepwise <- function(fwd, control) {
        B      = B[, J_best, drop = FALSE],
        Bfuncs = Bfuncs[J_best])
 }
+mars <- function(formula, data, control = mars.control()) {
+  cc      <- match.call()
+  mf      <- model.frame(formula, data)
+  y       <- model.response(mf)
+  mt      <- attr(mf, "terms")
+  x       <- model.matrix(mt, mf)[, -1, drop = FALSE]
+  x_names <- colnames(x)
 
+  fwd <- fwd_stepwise(y, x, control)
+  bwd <- bwd_stepwise(fwd, control)
+  fit <- lm(y ~ . - 1, data = data.frame(y = y, bwd$B))
+
+  out <- c(list(call    = cc,
+                formula = formula,
+                y       = y,
+                B       = bwd$B,
+                Bfuncs  = bwd$Bfuncs,
+                x_names = x_names),
+           fit)
+
+  class(out) <- c("mars", class(fit))
+  out
+}
