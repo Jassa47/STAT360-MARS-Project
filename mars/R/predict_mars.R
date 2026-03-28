@@ -10,7 +10,7 @@ predict.mars <- function(object, newdata, ...) {
   beta <- object$coefficients
   drop(B %*% beta)
 }
-#' @export
+#' @keywords internal
 make_B <- function(X, Bfuncs) {
   N <- nrow(X)
   M <- length(Bfuncs)
