@@ -108,3 +108,41 @@ fwd_stepwise <- function(y, x, control = mars.control()) {
   colnames(B) <- paste0("B", 0:Mmax)
   list(y = y, B = as.data.frame(B), Bfuncs = Bfuncs)
 }
+bwd_stepwise <- function(fwd, control) {
+  y      <- fwd$y
+  B      <- fwd$B
+  Bfuncs <- fwd$Bfuncs
+  Ncols  <- ncol(B)
+
+  J_star   <- 1:Ncols
+  lof_star <- LOF(y ~ . - 1,
+                  data = cbind(y = y, B[, J_star, drop = FALSE]),
+                  control)
+  J_best   <- J_star
+
+  for (M in Ncols:2) {
+    b_best <- Inf
+    K_best <- NULL
+
+    for (m in 2:M) {
+      K   <- J_star[-m]
+      dat <- cbind(y = y, B[, K, drop = FALSE])
+      lof <- LOF(y ~ . - 1, data = dat, control)
+
+      if (lof < b_best) {
+        b_best <- lof
+        K_best <- K
+      }
+      if (lof < lof_star) {
+        lof_star <- lof
+        J_best   <- K
+      }
+    }
+    J_star <- K_best
+  }
+
+  list(y      = y,
+       B      = B[, J_best, drop = FALSE],
+       Bfuncs = Bfuncs[J_best])
+}
+
