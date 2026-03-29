@@ -12,6 +12,7 @@ algorithm of Friedman (1991) for flexible nonlinear regression modelling.
 ## Group Members
 
 - Akaaljot Mathoda — [Your SFU ID]
+- Mayank Mayank — 301563549
 
 ---
 
