@@ -1,7 +1,7 @@
 ---
 title: "mars() Function Documentation"
 subtitle: "STAT 360 Final Project"
-authors: "Akaaljot Mathoda (SFU ID: XXXXXXXX), Mayank Mayank (301563549)"
+authors: "Akaaljot Mathoda  (301575954), Mayank Mayank (301563549)"
 date: "`r Sys.Date()`"
 output: html_document
 ---
