@@ -16,6 +16,15 @@ algorithm of Friedman (1991) for flexible nonlinear regression modelling.
 
 ---
 
+## Contributions
+
+| Member | Contributions | Share |
+|--------|--------------|-------|
+| Akaaljot Mathoda | Implemented `mars.R`; testing, debugging, and Part 3 of the report | 50% |
+| Mayank Mayank | Implemented all UI files; Parts 1 & 2 of the report | 50% |
+
+---
+
 ## Files
 
 ### Core Algorithm
