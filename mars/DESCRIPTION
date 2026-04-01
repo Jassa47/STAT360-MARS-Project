@@ -2,8 +2,8 @@ Package: mars
 Title: Multivariate Adaptive Regression Splines
 Version: 1.0.0
 Authors@R: c(
-    person("Akaaljot", "Mathoda", role = c("aut", "cre")),
-    person("Mayank", "Mayank", role = "aut"))
+    person("Akaaljot", "Mathoda", email = "asm40@sfu.ca", role = c("aut", "cre")),
+    person("Mayank", "Mayank", email = "mma266@sfu.ca", role = "aut"))
 Description: Implements the MARS algorithm of Friedman (1991) for
     flexible nonlinear regression using piecewise-linear hinge basis
     functions with forward stepwise construction and backward pruning
