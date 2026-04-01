@@ -1,16 +1,12 @@
-# =============================================================================
 # test.R - Three worked examples for the MARS R package
-# STAT 360 Final Project
-# =============================================================================
 
 library(mars)
 
-# =============================================================================
 # Example 1: marstestdata (provided dataset)
-# =============================================================================
+
 cat("=== Example 1: marstestdata ===\n\n")
 
-data("marstestdata", package = "mars")
+load(system.file("tests/testthat/marstestdata.rda", package = "mars"))
 mc <- mars.control(Mmax = 10, d = 3, trace = FALSE)
 fit1 <- mars(y ~ ., data = marstestdata, control = mc)
 
@@ -21,9 +17,9 @@ head(predict(fit1))
 predict(fit1, newdata = head(marstestdata, 5))
 anova(fit1)
 
-# =============================================================================
+
 # Example 2: Boston Housing Data
-# =============================================================================
+
 cat("\n=== Example 2: Boston Housing Data ===\n\n")
 
 library(MASS)
@@ -48,9 +44,9 @@ cat(sprintf("In-sample R-squared: %.4f\n", 1 - ss_res/ss_tot))
 
 anova(fit2)
 
-# =============================================================================
+
 # Example 3: Simulated Nonlinear Data with Train/Test Split
-# =============================================================================
+
 cat("\n=== Example 3: Simulated Nonlinear Data ===\n\n")
 
 set.seed(42)

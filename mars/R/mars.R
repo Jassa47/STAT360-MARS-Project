@@ -1,53 +1,28 @@
-new_mars.control <- function(control) {
-  structure(control, class = "mars.control")
+mars <- function(formula, data, control = mars.control()) {
+  cc      <- match.call()
+  mf      <- model.frame(formula, data)
+  y       <- model.response(mf)
+  mt      <- attr(mf, "terms")
+  x       <- model.matrix(mt, mf)[, -1, drop = FALSE]
+  x_names <- colnames(x)
+
+  fwd <- fwd_stepwise(y, x, control)
+  bwd <- bwd_stepwise(fwd, control)
+  fit <- lm(y ~ . - 1, data = data.frame(y = y, bwd$B))
+
+  out <- c(list(call    = cc,
+                formula = formula,
+                y       = y,
+                B       = bwd$B,
+                Bfuncs  = bwd$Bfuncs,
+                x_names = x_names),
+           fit)
+
+  class(out) <- c("mars", class(fit))
+  out
 }
 
-validate_mars.control <- function(control) {
-  stopifnot(is.integer(control$Mmax),
-            is.numeric(control$d),
-            is.logical(control$trace))
-  if (control$Mmax < 2) {
-    warning("Mmax must be >= 2; Reset it to 2")
-    control$Mmax <- 2L
-  }
-  if (control$Mmax %% 2 > 0) {
-    control$Mmax <- 2L * ceiling(control$Mmax / 2L)
-    warning("Mmax should be an even integer. Reset it to ", control$Mmax)
-  }
-  control
-}
 
-mars.control <- function(Mmax = 2, d = 3, trace = FALSE) {
-  Mmax    <- as.integer(Mmax)
-  control <- list(Mmax = Mmax, d = d, trace = trace)
-  control <- validate_mars.control(control)
-  new_mars.control(control)
-}
-
-h <- function(x, s, t) {
-  pmax(0, s * (x - t))
-}
-
-init_B <- function(N, Mmax) {
-  B        <- as.data.frame(matrix(0, nrow = N, ncol = Mmax + 1))
-  B[, 1]   <- 1
-  names(B) <- c("B0", paste0("B", 1:Mmax))
-  B
-}
-
-split_points <- function(xv, Bm) {
-  out <- sort(unique(xv[Bm > 0]))
-  out[-length(out)]
-}
-
-LOF <- function(form, data, control) {
-  ff     <- lm(form, data)
-  RSS    <- sum(residuals(ff)^2)
-  N      <- nrow(data)
-  M      <- length(coef(ff)) - 1
-  Ctilde <- sum(hatvalues(ff)) + control$d * M
-  RSS * N / (N - Ctilde)^2
-}
 fwd_stepwise <- function(y, x, control = mars.control()) {
   N    <- length(y)
   n    <- ncol(x)
@@ -108,6 +83,7 @@ fwd_stepwise <- function(y, x, control = mars.control()) {
   colnames(B) <- paste0("B", 0:Mmax)
   list(y = y, B = as.data.frame(B), Bfuncs = Bfuncs)
 }
+
 bwd_stepwise <- function(fwd, control) {
   y      <- fwd$y
   B      <- fwd$B
@@ -145,26 +121,63 @@ bwd_stepwise <- function(fwd, control) {
        B      = B[, J_best, drop = FALSE],
        Bfuncs = Bfuncs[J_best])
 }
-mars <- function(formula, data, control = mars.control()) {
-  cc      <- match.call()
-  mf      <- model.frame(formula, data)
-  y       <- model.response(mf)
-  mt      <- attr(mf, "terms")
-  x       <- model.matrix(mt, mf)[, -1, drop = FALSE]
-  x_names <- colnames(x)
 
-  fwd <- fwd_stepwise(y, x, control)
-  bwd <- bwd_stepwise(fwd, control)
-  fit <- lm(y ~ . - 1, data = data.frame(y = y, bwd$B))
 
-  out <- c(list(call    = cc,
-                formula = formula,
-                y       = y,
-                B       = bwd$B,
-                Bfuncs  = bwd$Bfuncs,
-                x_names = x_names),
-           fit)
-
-  class(out) <- c("mars", class(fit))
-  out
+LOF <- function(form, data, control) {
+  ff     <- lm(form, data)
+  RSS    <- sum(residuals(ff)^2)
+  N      <- nrow(data)
+  M      <- length(coef(ff)) - 1
+  Ctilde <- sum(hatvalues(ff)) + control$d * M
+  RSS * N / (N - Ctilde)^2
 }
+
+validate_mars.control <- function(control) {
+  stopifnot(is.integer(control$Mmax),
+            is.numeric(control$d),
+            is.logical(control$trace))
+  if (control$Mmax < 2) {
+    warning("Mmax must be >= 2; Reset it to 2")
+    control$Mmax <- 2L
+  }
+  if (control$Mmax %% 2 > 0) {
+    control$Mmax <- 2L * ceiling(control$Mmax / 2L)
+    warning("Mmax should be an even integer. Reset it to ", control$Mmax)
+  }
+  control
+}
+
+
+new_mars.control <- function(control) {
+  structure(control, class = "mars.control")
+}
+
+
+mars.control <- function(Mmax = 2, d = 3, trace = FALSE) {
+  Mmax    <- as.integer(Mmax)
+  control <- list(Mmax = Mmax, d = d, trace = trace)
+  control <- validate_mars.control(control)
+  new_mars.control(control)
+}
+
+
+h <- function(x, s, t) {
+  pmax(0, s * (x - t))
+}
+
+
+init_B <- function(N, Mmax) {
+  B        <- as.data.frame(matrix(0, nrow = N, ncol = Mmax + 1))
+  B[, 1]   <- 1
+  names(B) <- c("B0", paste0("B", 1:Mmax))
+  B
+}
+
+
+split_points <- function(xv, Bm) {
+  out <- sort(unique(xv[Bm > 0]))
+  out[-length(out)]
+}
+
+
+

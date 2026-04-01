@@ -2,8 +2,12 @@ Package: mars
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Akaaljot", "Mathoda", role = c("aut", "cre")),
+    person("Mayank", "Mayank", role = "aut"))
+Description: Implements the MARS algorithm of Friedman (1991) for
+    flexible nonlinear regression using piecewise-linear hinge basis
+    functions with forward stepwise construction and backward pruning
+    via generalized cross-validation.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
